@@ -1,0 +1,117 @@
+---
+title: "P8105 Homework 1"
+author: "Kyung Suk Lee"
+date: "`r Sys.Date()`"
+output: 
+  github_document:
+    toc: yes
+---
+
+```{r load_packages, message=FALSE}
+library(tidyverse)
+library(ggplot2)
+
+knitr::opts_chunk$set(comment = NA, message = F, warning = F, echo = T)
+```
+
+## Problem 1
+
+### 1-1) Create a data frame with the specified elements
+
+```{r create_df}
+prob1_df <-  
+  tibble(
+    ran_samp = rnorm(10),
+    logical_vec = ran_samp > 0,
+    char_vec = c("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
+    factor_vec = factor(c("low", "low", "low", "mod", "mod", "mod", "mod", "high", "high", "high"))
+)
+prob1_df
+```
+
+### 1-2) Take the mean of each variable in prob1_df
+
+```{r mean_var, collapse=TRUE}
+mean(pull(prob1_df, ran_samp))
+mean(pull(prob1_df, logical_vec))
+mean(pull(prob1_df, char_vec))
+mean(pull(prob1_df, factor_vec))
+```
+
+* As can be seen above, I was able to obtain **mean values** for _random sample_ (`r mean(pull(prob1_df, ran_samp))`) and _logical vector_ (`r mean(pull(prob1_df, logical_vec))`), but not with _character vector_ (`r mean(pull(prob1_df, char_vec))`) and _factor vector_ (`r mean(pull(prob1_df, factor_vec))`).<br/> 
+
+### 1-3) Convert variables to numeric
+
+```{r convert_numeric, results='hide'}
+# For this question I have hide the output since the instruction was stated as "please show this chunk but not the output)"
+
+as.numeric(pull(prob1_df, ran_samp))
+as.numeric(pull(prob1_df, logical_vec))
+as.numeric(pull(prob1_df, char_vec))
+as.numeric(pull(prob1_df, factor_vec))
+```
+
+* When converting variables to numeric, I was able to convert _random sample_, _logical vector_, and _factor vector_ to numeric, but not with _character vector_.<br/>
+* For _random sample_, the values were already numeric; for _logical vector_, conditional values of True or False was converted to binary values of 1 or 0 
+(respectively); for _factor vector_, 3 different levels were also converted to numeric values of 1 (high) 2 (low) 3 (mod).<br/> 
+* However, _character vector_ was not able to be converted into numeric value.<br/>
+
+```{r mean_convert, collapse=TRUE}
+mean(as.numeric(pull(prob1_df, ran_samp)))
+mean(as.numeric(pull(prob1_df, logical_vec)))
+mean(as.numeric(pull(prob1_df, char_vec)))
+mean(as.numeric(pull(prob1_df, factor_vec)))
+```
+
+* As can be seen above, when I take the mean of converted variables (as numeric), I was able to obtain the mean values for random sample (`r mean(as.numeric(pull(prob1_df, ran_samp)))`), logical vector (`r mean(as.numeric(pull(prob1_df, logical_vec)))`), and factor vector (`r mean(as.numeric(pull(prob1_df, factor_vec)))`), but not with character vector (`r mean(as.numeric(pull(prob1_df, char_vec)))`).<br/>
+* Thus, when you convert variables to numeric, it helps to take the mean for ones which can be expressed in numbers.<br/>
+
+### 1-4) Multiply the results
+
+```{r convert & multiply, collapse=TRUE}
+as.numeric(pull(prob1_df, logical_vec))*pull(prob1_df, ran_samp)
+as.factor(pull(prob1_df, logical_vec))*pull(prob1_df, ran_samp)
+as.numeric(as.factor(pull(prob1_df, logical_vec)))*pull(prob1_df, ran_samp)
+```
+* As can be seen above, once the variables were converted to numeric, I was able to multiply the random sample by the result since random sample is also numeric. However, when the variable was converted to factor, I wasn't able to multiply the random sample by the result as the result is no longer numeric.<br/>
+
+---
+
+## Problem 2
+
+### 2-1) Description of the penguins dataset
+
+```{r penguins dataset}
+data("penguins", package = "palmerpenguins")
+penguins
+```
+
+```{r}
+summary(penguins)
+```
+
+```{r}
+round(median(pull(penguins, bill_length_mm), na.rm = TRUE))
+```
+
+
+* Some descriptions about the penguins dataset
+  + Penguins dataset is comprised of _`r names(penguins)`_ with the size of **`r nrow(penguins)`** rows and **`r ncol(penguins)`** columns.<br/>
+  + Within _species_, there are **`r unique(pull(penguins, species))`**. Among them, there are `r length(which(pull(penguins, species) == "Adelie"))` **Adelie**, `r length(which(pull(penguins, species) == "Gentoo"))` **Gentoo**, and `r length(which(pull(penguins, species) == "Chinstrap"))` **Chinstrap** species. Thus, just by observing the dataset, both **Adelie** and **Gentoo** comprises more than half of the species.<br/> 
+  + For each _species_, the dataset shows which island they live **(`r unique(pull(penguins, island))`)** in, the _sex_ **(`r levels(pull(penguins, sex))`)**, and the _years_ when they were observed **(`r unique(pull(penguins, year))`)**.<br/>
+  + When we look at islands, among them, `r length(which(pull(penguins, island) == "Biscoe"))` penguins live in **Biscoe**, `r length(which(pull(penguins, island) == "Dream"))` in **Dream**, and `r length(which(pull(penguins, island) == "Torgersen"))` in **Torgersen**. Thus, just by observing the dataset, majority of penguins live in both **Biscoe** and **Dream**.<br/>
+  + For different sex, **males** are `r length(which(pull(penguins, sex) == "male"))` and **females** are `r length(which(pull(penguins, sex) == "female"))`, which is pretty even.
+  + Also we can observe that the range of _bill length_ is from **`r min(pull(penguins, bill_length_mm), na.rm = TRUE)`**mm to **`r max(pull(penguins, bill_length_mm), na.rm = TRUE)`**mm; for _bill depth_ from  **`r min(pull(penguins, bill_depth_mm), na.rm = TRUE)`**mm to **`r max(pull(penguins, bill_depth_mm), na.rm = TRUE)`**mm; for _flipper length_ from  **`r min(pull(penguins, flipper_length_mm), na.rm = TRUE)`**mm to **`r max(pull(penguins, flipper_length_mm), na.rm = TRUE)`**mm; and for _body mass_ from  **`r min(pull(penguins, body_mass_g), na.rm = TRUE)`**g to **`r max(pull(penguins, body_mass_g), na.rm = TRUE)`**g for all _species_.<br/>
+  + When we compare the mean and median for each variables, for _bill length_ the mean is **`r round(mean(pull(penguins, bill_length_mm), na.rm = TRUE))`**mm and the median is **`r round(median(pull(penguins, bill_length_mm), na.rm = TRUE))`**mm; for _bill depth_ the mean is **`r round(mean(pull(penguins, bill_depth_mm), na.rm = TRUE))`**mm and the median is **`r round(median(pull(penguins, bill_depth_mm), na.rm = TRUE))`**mm; for _flipper length_ the mean is **`r round(mean(pull(penguins, flipper_length_mm), na.rm = TRUE))`**mm and the median is **`r round(median(pull(penguins, flipper_length_mm), na.rm = TRUE))`**mm; for body mass the mean is **`r round(mean(pull(penguins, body_mass_g), na.rm = TRUE))`**g and the median is **`r round(median(pull(penguins, body_mass_g), na.rm = TRUE))`**g. Since the mean and the median for all variables are close to one another, we can say that the distribution for theses variables are fairly _symmetric_ and the distribution will probably have zero _skewness_.<br/>
+  + Especially, the mean value of _flipper length_ for all species is **`r round(mean(pull(penguins, flipper_length_mm), na.rm = TRUE))`**mm.<br/>
+
+### 2-2) Make a scatterplot and save the img
+
+```{r scatterplot, collapse=TRUE}
+ggplot(penguins, aes(x=bill_length_mm, y=flipper_length_mm, color = species, shape = species)) +
+  geom_point() +
+  labs(title="Scatterplot of bill length and flipper length",
+       x="bill length (mm)", y = "flipper length (mm)")
+ggsave("scatterplot.pdf")
+```
+
