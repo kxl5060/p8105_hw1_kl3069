@@ -86,14 +86,9 @@ data("penguins", package = "palmerpenguins")
 penguins
 ```
 
-```{r}
+```{r summary}
 summary(penguins)
 ```
-
-```{r}
-round(median(pull(penguins, bill_length_mm), na.rm = TRUE))
-```
-
 
 * Some descriptions about the penguins dataset
   + Penguins dataset is comprised of _`r names(penguins)`_ with the size of **`r nrow(penguins)`** rows and **`r ncol(penguins)`** columns.<br/>
